@@ -1,5 +1,11 @@
 <template>
-  <div :class="['el-carousel', `el-carousel--${direction}`]"></div>
+  <div
+    :class="[
+      `el-carousel`,
+      `el-carousel${type === 'card' ? '--card' : ''}`,
+      `el-carousel--${direction}`
+    ]"
+  ></div>
 </template>
 
 <script>
