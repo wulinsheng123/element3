@@ -11,6 +11,16 @@ describe('Carousel.vue', () => {
       })
       expect(wrapper.classes()).toContain('el-carousel--vertical')
       expect(wrapper.classes()).toHaveLength(2)
+      expect(wrapper.classes()).not.toContain('el-carousel--card')
+    })
+    it('the component Carousel contained card class  when the property was type', () => {
+      const wrapper = mount(Carousel, {
+        props: {
+          type: 'card'
+        }
+      })
+      expect(wrapper.classes()).toHaveLength(3)
+      expect(wrapper.classes()).toContain('el-carousel--card')
     })
   })
 })
