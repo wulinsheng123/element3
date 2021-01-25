@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Carousel.vue snapshot 1`] = `
+<div
+  class="el-carousel__item"
+  style="display: none;"
+/>
+`;
