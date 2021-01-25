@@ -1,5 +1,8 @@
 import { computed } from 'vue'
-export const classes = (props) =>
-  computed(() => {
-    return {}
-  })
+export function stateCollection(props) {
+  return {
+    isArrowDisplay: computed(() => {
+      return props.arrow !== 'never' && props.direction !== 'vertical'
+    })
+  }
+}
