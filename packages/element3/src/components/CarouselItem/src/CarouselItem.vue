@@ -1,5 +1,12 @@
 <template>
-  <div></div>
+  <div class="el-carousel__item">
+    <div class="el-carousel__mask"></div>
+    <slot></slot>
+  </div>
 </template>
 
-<script></script>
+<script>
+export default {
+  name: 'ElCarouselItem'
+}
+</script>
