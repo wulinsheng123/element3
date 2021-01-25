@@ -1,12 +1,24 @@
 <template>
-  <div class="el-carousel__item">
-    <div class="el-carousel__mask"></div>
-    <slot></slot>
-  </div>
+  <div v-show="ready" class="el-carousel__item"></div>
 </template>
 
 <script>
-export default {
-  name: 'ElCarouselItem'
-}
+import { defineComponent, reactive, toRefs } from 'vue'
+
+export default defineComponent({
+  setup() {
+    const state = reactive({
+      ready: false
+    })
+
+    const { ready } = toRefs(state)
+
+    const translateItem = () => (state.ready = true)
+
+    return {
+      ready,
+      translateItem
+    }
+  }
+})
 </script>
