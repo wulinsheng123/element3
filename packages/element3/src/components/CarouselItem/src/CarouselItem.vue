@@ -7,6 +7,9 @@
 
 <script>
 export default {
-  name: 'ElCarouselItem'
+  name: 'ElCarouselItem',
+  props: {
+    label: Number
+  }
 }
 </script>

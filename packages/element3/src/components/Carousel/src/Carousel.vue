@@ -32,24 +32,41 @@
         'el-carousel__indicators',
         `${indicatorPosition === 'outside' || type === 'card'}`
           ? 'el-carousel__indicators--outside'
-          : ''
+          : '',
+        `${hasLabel ? 'el-carousel__indicators--labels' : ''}`
       ]"
-    ></ul>
+    >
+      <li
+        v-for="(item, index) in items"
+        :key="index"
+        :class="[
+          'el-carousel__indicator',
+          'el-carousel__indicator--' + direction
+        ]"
+      >
+        <button class="el-carousel__button">
+          <span v-if="hasLabel">{{ item.props.label }}</span>
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import {} from 'vue'
-import { props } from './props'
-import { stateCollection } from './use'
-export default {
+import { props } from './props.ts'
+import { defineComponent } from 'vue'
+import { stateCollection, beforeMountInit } from './use'
+export default defineComponent({
   name: 'ElCarousel',
   props,
-  setup(_props) {
-    const { isArrowDisplay } = stateCollection(_props)
+  setup(_props, { slots }) {
+    const { items } = beforeMountInit(_props)
+    const { isArrowDisplay, hasLabel } = stateCollection(_props, items)
     return {
-      isArrowDisplay
+      isArrowDisplay,
+      items,
+      hasLabel
     }
   }
-}
+})
 </script>
