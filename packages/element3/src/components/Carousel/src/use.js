@@ -13,6 +13,7 @@ export function stateCollection(props, items) {
 export function beforeMountInit(props) {
   const instance = getCurrentInstance()
   // 获取slot下的vode的个数
+  debugger
   const slots = instance.proxy.$slots
   return { items: slots.default()[0].children }
 }

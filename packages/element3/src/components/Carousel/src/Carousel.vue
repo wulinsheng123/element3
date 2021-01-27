@@ -7,17 +7,19 @@
     ]"
   >
     <div class="el-carousel__container" :style="{ height: height }">
-      <transition v-if="isArrowDisplay" name="carousel-arrow-left">
+      <transition v-if="states.sArrowDisplay" name="carousel-arrow-left">
         <button
           type="button"
+          @click.stop="throttledArrowClick(activeIndex - 1)"
           class="el-carousel__arrow el-carousel__arrow--left"
         >
           <i class="el-icon-arrow-left"></i>
         </button>
       </transition>
-      <transition v-if="isArrowDisplay" name="carousel-arrow-right">
+      <transition v-if="states.isArrowDisplay" name="carousel-arrow-right">
         <button
           type="button"
+          @click.stop="throttledArrowClick(activeIndex + 1)"
           class="el-carousel__arrow el-carousel__arrow--right"
         >
           <i class="el-icon-arrow-right"></i>
@@ -33,7 +35,7 @@
         `${indicatorPosition === 'outside' || type === 'card'}`
           ? 'el-carousel__indicators--outside'
           : '',
-        `${hasLabel ? 'el-carousel__indicators--labels' : ''}`
+        `${state.hasLabel ? 'el-carousel__indicators--labels' : ''}`
       ]"
     >
       <li
@@ -45,7 +47,7 @@
         ]"
       >
         <button class="el-carousel__button">
-          <span v-if="hasLabel">{{ item.props.label }}</span>
+          <span v-if="state.hasLabel">{{ item.props.label }}</span>
         </button>
       </li>
     </ul>
@@ -61,11 +63,10 @@ export default defineComponent({
   props,
   setup(_props, { slots }) {
     const { items } = beforeMountInit(_props)
-    const { isArrowDisplay, hasLabel } = stateCollection(_props, items)
+    const states = stateCollection(_props, items)
     return {
-      isArrowDisplay,
-      items,
-      hasLabel
+      states,
+      items
     }
   }
 })
