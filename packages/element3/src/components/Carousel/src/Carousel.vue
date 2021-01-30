@@ -7,17 +7,19 @@
     ]"
   >
     <div class="el-carousel__container" :style="{ height: height }">
-      <transition v-if="isArrowDisplay" name="carousel-arrow-left">
+      <transition v-if="states.sArrowDisplay" name="carousel-arrow-left">
         <button
           type="button"
+          @click.stop="throttledArrowClick(activeIndex - 1)"
           class="el-carousel__arrow el-carousel__arrow--left"
         >
           <i class="el-icon-arrow-left"></i>
         </button>
       </transition>
-      <transition v-if="isArrowDisplay" name="carousel-arrow-right">
+      <transition v-if="states.isArrowDisplay" name="carousel-arrow-right">
         <button
           type="button"
+          @click.stop="throttledArrowClick(activeIndex + 1)"
           class="el-carousel__arrow el-carousel__arrow--right"
         >
           <i class="el-icon-arrow-right"></i>
@@ -32,24 +34,40 @@
         'el-carousel__indicators',
         `${indicatorPosition === 'outside' || type === 'card'}`
           ? 'el-carousel__indicators--outside'
-          : ''
+          : '',
+        `${state.hasLabel ? 'el-carousel__indicators--labels' : ''}`
       ]"
-    ></ul>
+    >
+      <li
+        v-for="(item, index) in items"
+        :key="index"
+        :class="[
+          'el-carousel__indicator',
+          'el-carousel__indicator--' + direction
+        ]"
+      >
+        <button class="el-carousel__button">
+          <span v-if="state.hasLabel">{{ item.props.label }}</span>
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script>
-import {} from 'vue'
-import { props } from './props'
-import { stateCollection } from './use'
-export default {
+import { props } from './props.ts'
+import { defineComponent } from 'vue'
+import { stateCollection, beforeMountInit } from './use'
+export default defineComponent({
   name: 'ElCarousel',
   props,
-  setup(_props) {
-    const { isArrowDisplay } = stateCollection(_props)
+  setup(_props, { slots }) {
+    const { items } = beforeMountInit(_props)
+    const states = stateCollection(_props, items)
     return {
-      isArrowDisplay
+      states,
+      items
     }
   }
-}
+})
 </script>

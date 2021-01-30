@@ -1,6 +1,18 @@
 import Carousel from '../src/Carousel.vue'
+import CarouselItem from '../../CarouselItem'
 import { mount } from '@vue/test-utils'
-
+const componentCollection = {
+  template: `
+        <Carousel height="150px">
+          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
+          {{item}}
+          </CarouselItem>
+        </Carousel>`,
+  components: {
+    Carousel,
+    CarouselItem
+  }
+}
 describe('Carousel.vue', () => {
   describe('test that the Carousel components classes function', () => {
     it('test when the component attribute type is vertical', () => {
@@ -30,6 +42,40 @@ describe('Carousel.vue', () => {
       })
       const attrs = wrapper.get('.el-carousel__container').attributes('style')
       expect(attrs).toEqual('height: 400px;')
+    })
+    it('get the components children amount', () => {
+      const wrapper = mount({
+        template: `
+        <Carousel height="150px">
+          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
+          {{item}}
+          </CarouselItem>
+        </Carousel>`,
+        components: {
+          Carousel,
+          CarouselItem
+        }
+      })
+      expect(wrapper.find('.el-carousel__indicators--labels')).toBeTruthy()
+      expect(wrapper.findAll('.el-carousel__indicator')).toHaveLength(4)
+      expect(wrapper.findAll('.el-carousel__button')[0].text()).toBe('1')
+    })
+    it('test turn up page function', () => {
+      const wrapper = mount({
+        template: `
+        <Carousel height="150px">
+          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
+          {{item}}
+          </CarouselItem>
+        </Carousel>`,
+        components: {
+          Carousel,
+          CarouselItem
+        }
+      })
+      wrapper.vm.setActiveItem(1)
+
+      expect(wrapper.vm.activeIndex).toBe(1)
     })
   })
   describe('test component previous and next button functions', () => {
