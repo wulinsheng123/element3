@@ -1,5 +1,5 @@
 import Carousel from '../src/Carousel.vue'
-import CarouselItem from '../../CarouselItem'
+import CarouselItem from '../../CarouselItem/src/CarouselItem.vue'
 import { mount } from '@vue/test-utils'
 const componentCollection = {
   template: `

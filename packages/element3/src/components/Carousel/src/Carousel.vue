@@ -57,13 +57,14 @@
 <script>
 import { props } from './props.ts'
 import { defineComponent } from 'vue'
-import { stateCollection, beforeMountInit } from './use'
+import { stateCollection, correspondenceComponent } from './use'
 export default defineComponent({
   name: 'ElCarousel',
   props,
   setup(_props, { slots }) {
-    const { items } = beforeMountInit(_props)
+    const { items } = correspondenceComponent()
     const states = stateCollection(_props, items)
+    console.log(items.value)
     return {
       states,
       items
