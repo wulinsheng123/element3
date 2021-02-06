@@ -35,7 +35,7 @@
         `${indicatorPosition === 'outside' || type === 'card'}`
           ? 'el-carousel__indicators--outside'
           : '',
-        `${state.hasLabel ? 'el-carousel__indicators--labels' : ''}`
+        `${states.hasLabel ? 'el-carousel__indicators--labels' : ''}`
       ]"
     >
       <li
@@ -47,7 +47,7 @@
         ]"
       >
         <button class="el-carousel__button">
-          <span v-if="state.hasLabel">{{ item.props.label }}</span>
+          <span v-if="states.hasLabel">{{ item.label }}</span>
         </button>
       </li>
     </ul>
@@ -57,17 +57,18 @@
 <script>
 import { props } from './props.ts'
 import { defineComponent } from 'vue'
-import { stateCollection, correspondenceComponent } from './use'
+import { stateCollection, correspondenceComponent, setIndicate } from './use'
 export default defineComponent({
   name: 'ElCarousel',
   props,
   setup(_props, { slots }) {
     const { items } = correspondenceComponent()
     const states = stateCollection(_props, items)
-    console.log(items.value)
+
     return {
       states,
-      items
+      items,
+      ...setIndicate(items, props)
     }
   }
 })

@@ -1,11 +1,11 @@
 import Carousel from '../src/Carousel.vue'
-import CarouselItem from '../../CarouselItem/src/CarouselItem.vue'
+import CarouselItem from '../../CarouselItem'
 import { mount } from '@vue/test-utils'
-const componentCollection = {
+const component = {
   template: `
-        <Carousel height="150px">
-          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
-          {{item}}
+        <Carousel height="150px" loop>
+          <CarouselItem v-for="(item,index) in 4" :label="item" :name="index + 'index'" :key="item">
+            {{item}}
           </CarouselItem>
         </Carousel>`,
   components: {
@@ -43,39 +43,31 @@ describe('Carousel.vue', () => {
       const attrs = wrapper.get('.el-carousel__container').attributes('style')
       expect(attrs).toEqual('height: 400px;')
     })
-    it('get the components children amount', () => {
-      const wrapper = mount({
-        template: `
-        <Carousel height="150px">
-          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
-          {{item}}
-          </CarouselItem>
-        </Carousel>`,
-        components: {
-          Carousel,
-          CarouselItem
-        }
-      })
+    it('get the components children amount', async () => {
+      const wrapper = mount(component)
+      const w = wrapper.findComponent('.el-carousel')
       expect(wrapper.find('.el-carousel__indicators--labels')).toBeTruthy()
-      expect(wrapper.findAll('.el-carousel__indicator')).toHaveLength(4)
-      expect(wrapper.findAll('.el-carousel__button')[0].text()).toBe('1')
+      expect(wrapper.findAll('.el-carousel__item')).toHaveLength(4)
+      expect(w.vm.items).toHaveLength(4)
     })
-    it('test turn up page function', () => {
-      const wrapper = mount({
-        template: `
-        <Carousel height="150px">
-          <CarouselItem v-for="(item,index) in 4" :label="item" :key="item">
-          {{item}}
-          </CarouselItem>
-        </Carousel>`,
-        components: {
-          Carousel,
-          CarouselItem
-        }
-      })
-      wrapper.vm.setActiveItem(1)
-
-      expect(wrapper.vm.activeIndex).toBe(1)
+    it('test manual turn up page function', () => {
+      const wrapper = mount(component)
+      const w = wrapper.findComponent('.el-carousel')
+      const result = w.vm.setActiveIndex('2s')
+      expect(result).toBeFalsy()
+      w.vm.setActiveIndex(1)
+      expect(w.vm.activeIndex).toBe(1)
+      w.vm.setActiveIndex('1index')
+      const index = w.vm.activeIndex
+      expect(index).toBe(1)
+    })
+    it('test next page and previous page function', () => {
+      const wrapper = mount(component)
+      const w = wrapper.findComponent('.el-carousel')
+      w.vm.prev()
+      expect(w.vm.activeIndex).toBe(3)
+      w.vm.next()
+      expect(w.vm.activeIndex).toBe(0)
     })
   })
   describe('test component previous and next button functions', () => {
@@ -86,7 +78,7 @@ describe('Carousel.vue', () => {
         }
       })
       expect(wrapper.vm.arrow).toBe('always')
-      expect(wrapper.vm.isArrowDisplay).toBeTruthy()
+      expect(wrapper.vm.states.isArrowDisplay).toBeTruthy()
     })
   })
   describe('the components indicator', () => {
@@ -98,7 +90,7 @@ describe('Carousel.vue', () => {
       })
       const classes = wrapper.get('.el-carousel__indicators').classes()
       expect(classes).toContain('el-carousel__indicators--outside')
-      expect(classes).toHaveLength(3)
+      expect(classes).toHaveLength(4)
     })
   })
 })

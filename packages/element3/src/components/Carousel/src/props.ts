@@ -32,5 +32,9 @@ export const props = {
     validator(val: string): boolean {
       return ['none', 'outside', ''].includes(val)
     }
+  },
+  loop: {
+    type: Boolean,
+    default: false
   }
 }

@@ -1,6 +1,6 @@
 import CarouselItem from '../src/CarouselItem.vue'
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 
 describe('Carousel.vue', () => {
   it('snapshot', () => {
@@ -9,11 +9,18 @@ describe('Carousel.vue', () => {
   })
 
   it('should render when call translateItem', async () => {
-    const wrapper = mount(CarouselItem)
-
-    wrapper.vm.translateItem()
-
-    await nextTick()
-    expect(wrapper.find('.el-carousel__item').isVisible()).toBeTruthy()
+    const items = ref([])
+    const getChilrenItems = jest.fn((child) => {
+      items.value.push(child.proxy)
+    })
+    mount(CarouselItem, {
+      global: {
+        provide: {
+          CAROUSEL: { getChilrenItems }
+        }
+      }
+    })
+    expect(getChilrenItems).toHaveBeenCalled()
+    expect(items.value).toHaveLength(1)
   })
 })
