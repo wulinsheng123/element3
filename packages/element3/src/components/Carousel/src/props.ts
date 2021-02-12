@@ -36,5 +36,17 @@ export const props = {
   loop: {
     type: Boolean,
     default: false
+  },
+  initialIndex: {
+    type: Number,
+    default: 0
+  },
+  interval: {
+    type: Number,
+    default: 3000
+  },
+  autoplay: {
+    type: Boolean,
+    default: true
   }
 }

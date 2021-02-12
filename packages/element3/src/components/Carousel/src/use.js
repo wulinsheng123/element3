@@ -1,15 +1,5 @@
-import { computed, provide, ref } from 'vue'
+import { computed, provide, ref, onMounted, getCurrentInstance } from 'vue'
 const CAROUSEL = 'CAROUSEL'
-export function stateCollection(props, items) {
-  return {
-    isArrowDisplay: computed(() => {
-      return props.arrow !== 'never' && props.direction !== 'vertical'
-    }),
-    hasLabel: computed(() => {
-      return items.value.some((item) => item.label.toString().length > 0)
-    })
-  }
-}
 
 export function correspondenceComponent() {
   const items = ref([])
@@ -48,6 +38,30 @@ export function setIndicate(items, props) {
     },
     next() {
       setActiveIndex(_index.value + 1)
+    }
+  }
+}
+
+export function initComponent(props, items) {
+  const instance = getCurrentInstance()
+  const stateCollection = collectState(props, items)
+  onMounted(mounted)
+  return {
+    stateCollection
+  }
+  function mounted() {
+    if (props.initialIndex < items.value.length && props.initialIndex >= 0) {
+      instance.proxy.activeIndex = props.initialIndex
+    }
+  }
+  function collectState(props, items) {
+    return {
+      isArrowDisplay: computed(() => {
+        return props.arrow !== 'never' && props.direction !== 'vertical'
+      }),
+      hasLabel: computed(() => {
+        return items.value.some((item) => item.label.toString().length > 0)
+      })
     }
   }
 }

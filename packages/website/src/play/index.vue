@@ -1,23 +1,47 @@
 <template>
-  <el-carousel height="150px">
-    <el-carousel-item v-for="item in 4" :key="item">
-      <h3 class="small">{{ item }}</h3>
-    </el-carousel-item>
-  </el-carousel>
+  <!-- <el-new-table :data="tableData">
+    <el-new-table-column prop="date" label="日期" width="180">
+    </el-new-table-column>
+  </el-new-table> -->
+  <div>
+    <el-button>默认按钮</el-button>
+    <!-- {{ state.list }} -->
+    {{ list }}
+    <button @click="handleClick">click</button>
+  </div>
 </template>
 <script>
-import { ElCarousel } from '../../../element3/src/components/Carousel'
-import { ElCarouselItem } from '../../../element3/src/components/CarouselItem'
-import { defineComponent } from 'vue'
+import { defineComponent, reactive } from 'vue'
 export default defineComponent({
   data() {
     return {
-      tabPosition: 'top'
+      tableData: [
+        {
+          date: '2016-05-02',
+          time: 10
+        },
+        {
+          date: '2016-05-03',
+          time: 11
+        }
+      ]
     }
   },
-  components: {
-    ElCarousel,
-    ElCarouselItem
+  setup() {
+    // let state = reactive({
+    //   list: []
+    // })
+    let list = reactive([])
+    const handleClick = () => {
+      // state.list = [1, 2, 3]
+      list = [1, 2, 3]
+    }
+
+    return {
+      // state,
+      list,
+      handleClick
+    }
   }
 })
 </script>
