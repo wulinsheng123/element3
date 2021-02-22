@@ -1,12 +1,24 @@
-import { computed, provide, ref, onMounted, getCurrentInstance } from 'vue'
+import {
+  computed,
+  provide,
+  ref,
+  onMounted,
+  onUnmounted,
+  getCurrentInstance
+} from 'vue'
 const CAROUSEL = 'CAROUSEL'
 
 export function correspondenceComponent() {
+  const instance = getCurrentInstance()
   const items = ref([])
   function getChilrenItems(child) {
     items.value.push(child.proxy)
   }
-  provide(CAROUSEL, { getChilrenItems })
+  provide(CAROUSEL, {
+    getChilrenItems,
+    $parent: instance
+  })
+
   return { items }
 }
 
@@ -26,10 +38,9 @@ export function setIndicate(items, props) {
     }
     const length = items.value.length
     if (i < 0) _index.value = props.loop ? length - 1 : 0
-    if (index >= length) _index.value = props.loop ? 0 : length - 1
-    if (i > 0 && index < length) _index.value = i
+    if (i >= length) _index.value = props.loop ? 0 : length - 1
+    if (i >= 0 && index < length) _index.value = i
   }
-
   return {
     activeIndex: _index,
     setActiveIndex,
@@ -43,15 +54,15 @@ export function setIndicate(items, props) {
 }
 
 export function initComponent(props, items) {
-  const instance = getCurrentInstance()
-  const stateCollection = collectState(props, items)
-  onMounted(mounted)
+  const states = collectState(props, items)
+  const { pauseTimer, startTimer } = handleControler(props, items)
   return {
-    stateCollection
-  }
-  function mounted() {
-    if (props.initialIndex < items.value.length && props.initialIndex >= 0) {
-      instance.proxy.activeIndex = props.initialIndex
+    states,
+    handleMouseEnter() {
+      pauseTimer()
+    },
+    handleMouseLeave() {
+      startTimer()
     }
   }
   function collectState(props, items) {
@@ -63,5 +74,38 @@ export function initComponent(props, items) {
         return items.value.some((item) => item.label.toString().length > 0)
       })
     }
+  }
+}
+
+function handleControler(props, items) {
+  const instance = getCurrentInstance().proxy
+  const timer = ref(null)
+  const pauseTimer = function () {
+    if (timer.value) {
+      clearInterval(timer.value)
+      timer.value = null
+    }
+  }
+  const startTimer = () => {
+    if (!props.autoplay || props.timer) return false
+    timer.value = setInterval(() => {
+      instance.activeIndex < items.value.length - 1
+        ? instance.setActiveIndex(++instance.activeIndex)
+        : instance.setActiveIndex(0)
+    }, props.interval)
+  }
+  onMounted(() => {
+    if (props.initialIndex < items.value.length && props.initialIndex >= 0) {
+      instance.setActiveIndex(props.initialIndex)
+    }
+    startTimer()
+  })
+  onUnmounted(() => {
+    pauseTimer()
+  })
+
+  return {
+    pauseTimer,
+    startTimer
   }
 }

@@ -1,5 +1,12 @@
 <template>
-  <div class="el-carousel__item">
+  <div
+    class="el-carousel__item"
+    :style="itemStyle"
+    :class="{
+      'is-active': active,
+      'is-animating': animating
+    }"
+  >
     <div class="el-carousel__mask"></div>
     <slot></slot>
   </div>
@@ -7,15 +14,20 @@
 
 <script>
 import { props } from './props.ts'
-import { getParentMethods } from './use'
-import { defineComponent, getCurrentInstance } from 'vue'
+import { handleChildMethods } from './use'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
+  name: 'ElCarouselItem',
   props,
   setup() {
-    const instance = getCurrentInstance()
-    getParentMethods(instance)
-    return {}
+    const { translateItem, active, animating, itemStyle } = handleChildMethods()
+    return {
+      translateItem,
+      active,
+      animating,
+      itemStyle
+    }
   }
 })
 </script>

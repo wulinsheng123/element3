@@ -4,4 +4,4 @@ ElCarouselItem.install = function (app) {
   app.component(ElCarouselItem.name, ElCarouselItem)
 }
 
-export default ElCarouselItem
+export { ElCarouselItem }

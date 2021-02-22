@@ -1,5 +1,7 @@
 <template>
   <div
+    @mouseenter.stop="handleMouseEnter"
+    @mouseleave.stop="handleMouseLeave"
     :class="[
       `el-carousel`,
       `el-carousel${type === 'card' ? '--card' : ''}`,
@@ -7,10 +9,10 @@
     ]"
   >
     <div class="el-carousel__container" :style="{ height: height }">
-      <transition v-if="states.sArrowDisplay" name="carousel-arrow-left">
+      <transition v-if="states.isArrowDisplay" name="carousel-arrow-left">
         <button
           type="button"
-          @click.stop="throttledArrowClick(activeIndex - 1)"
+          @click.stop="throttle(() => prev(activeIndex - 1), 300)"
           class="el-carousel__arrow el-carousel__arrow--left"
         >
           <i class="el-icon-arrow-left"></i>
@@ -19,7 +21,7 @@
       <transition v-if="states.isArrowDisplay" name="carousel-arrow-right">
         <button
           type="button"
-          @click.stop="throttledArrowClick(activeIndex + 1)"
+          @click.stop="(() => next(activeIndex + 1), 300)"
           class="el-carousel__arrow el-carousel__arrow--right"
         >
           <i class="el-icon-arrow-right"></i>
@@ -42,6 +44,7 @@
         v-for="(item, index) in items"
         :key="index"
         :class="[
+          { 'is-active': index === activeIndex },
           'el-carousel__indicator',
           'el-carousel__indicator--' + direction
         ]"
@@ -57,17 +60,24 @@
 <script>
 import { props } from './props.ts'
 import { defineComponent } from 'vue'
+import { throttle } from 'lodash-es'
 import { correspondenceComponent, setIndicate, initComponent } from './use'
 export default defineComponent({
   name: 'ElCarousel',
   props,
   setup(_props, { slots }) {
     const { items } = correspondenceComponent()
-    const states = initComponent(_props, items)
+    const { states, handleMouseEnter, handleMouseLeave } = initComponent(
+      _props,
+      items
+    )
     return {
+      handleMouseEnter,
+      handleMouseLeave,
       states,
       items,
-      ...setIndicate(items, props)
+      throttle,
+      ...setIndicate(items, _props)
     }
   }
 })

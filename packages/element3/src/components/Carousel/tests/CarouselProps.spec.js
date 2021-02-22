@@ -13,4 +13,8 @@ describe('test the Carousel.vue props', () => {
     expect(props.indicatorPosition.validator()).toBeFalsy()
     expect(props.indicatorPosition.validator('none')).toBeTruthy()
   })
+  it('props property is interval', () => {
+    expect(props.interval.validator(-20)).toBeFalsy()
+    expect(props.interval.validator(2)).toBeTruthy()
+  })
 })

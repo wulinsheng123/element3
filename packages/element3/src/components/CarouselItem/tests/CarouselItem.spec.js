@@ -23,4 +23,28 @@ describe('Carousel.vue', () => {
     expect(getChilrenItems).toHaveBeenCalled()
     expect(items.value).toHaveLength(1)
   })
+  it('test components translateItem of function', () => {
+    const wrapper = mount(CarouselItem, {
+      global: {
+        provide: {
+          CAROUSEL: {
+            getChilrenItems() {},
+            $parent: {
+              proxy: {
+                type: null,
+                activeIndex: 2,
+                direction: 'vertical'
+              }
+            }
+          }
+        }
+      }
+    })
+    expect(wrapper.find('.is-animating')).toBeTruthy()
+    wrapper.vm.translateItem(2)
+    expect(wrapper.vm.active).toBeTruthy()
+    expect(wrapper.get('.el-carousel__item').attributes('style')).toContain(
+      'translateY(0px)'
+    )
+  })
 })

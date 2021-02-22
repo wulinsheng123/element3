@@ -43,7 +43,10 @@ export const props = {
   },
   interval: {
     type: Number,
-    default: 3000
+    default: 3000,
+    validator(val: number): boolean {
+      return val > 0
+    }
   },
   autoplay: {
     type: Boolean,
