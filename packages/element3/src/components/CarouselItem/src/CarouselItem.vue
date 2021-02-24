@@ -15,13 +15,16 @@
 <script>
 import { props } from './props.ts'
 import { handleChildMethods } from './use'
-import { defineComponent } from 'vue'
+import { defineComponent, getCurrentInstance } from 'vue'
 
 export default defineComponent({
   name: 'ElCarouselItem',
   props,
   setup() {
-    const { translateItem, active, animating, itemStyle } = handleChildMethods()
+    const instance = getCurrentInstance()
+    const { translateItem, active, animating, itemStyle } = handleChildMethods(
+      instance
+    )
     return {
       translateItem,
       active,

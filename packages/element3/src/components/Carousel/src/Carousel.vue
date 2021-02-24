@@ -12,7 +12,7 @@
       <transition v-if="states.isArrowDisplay" name="carousel-arrow-left">
         <button
           type="button"
-          @click.stop="throttle(() => prev(activeIndex - 1), 300)"
+          @click.stop="prev"
           class="el-carousel__arrow el-carousel__arrow--left"
         >
           <i class="el-icon-arrow-left"></i>
@@ -21,7 +21,7 @@
       <transition v-if="states.isArrowDisplay" name="carousel-arrow-right">
         <button
           type="button"
-          @click.stop="(() => next(activeIndex + 1), 300)"
+          @click.stop="next"
           class="el-carousel__arrow el-carousel__arrow--right"
         >
           <i class="el-icon-arrow-right"></i>
@@ -60,24 +60,22 @@
 <script>
 import { props } from './props.ts'
 import { defineComponent } from 'vue'
-import { throttle } from 'lodash-es'
-import { correspondenceComponent, setIndicate, initComponent } from './use'
+import { setIndicate, initComponent, correspondenceComponent } from './use'
 export default defineComponent({
   name: 'ElCarousel',
   props,
-  setup(_props, { slots }) {
-    const { items } = correspondenceComponent()
-    const { states, handleMouseEnter, handleMouseLeave } = initComponent(
-      _props,
-      items
+  setup() {
+    const instance = correspondenceComponent()
+    const { states, handleMouseEnter, handleMouseLeave, items } = initComponent(
+      instance
     )
+
     return {
+      ...setIndicate(instance),
+      items,
       handleMouseEnter,
       handleMouseLeave,
-      states,
-      items,
-      throttle,
-      ...setIndicate(items, _props)
+      states
     }
   }
 })

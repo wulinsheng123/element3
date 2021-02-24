@@ -1,7 +1,7 @@
 import Carousel from '../src/Carousel.vue'
 import { ElCarouselItem } from '../../CarouselItem'
 import { mount } from '@vue/test-utils'
-import { sortChildren } from '../src/util'
+import { sortChildren, calculateGauge } from '../src/util'
 const component = (date = { loop: true }) => ({
   template: `
         <Carousel height="150px"  v-bind='${JSON.stringify(date)}'>
@@ -17,36 +17,26 @@ const component = (date = { loop: true }) => ({
 jest.useFakeTimers()
 describe('Carousel.vue', () => {
   it('test when the component attribute type is vertical', () => {
-    const wrapper = mount(Carousel, {
-      props: {
-        direction: 'vertical'
-      }
-    })
-    expect(wrapper.classes()).toContain('el-carousel--vertical')
-    expect(wrapper.classes()).toHaveLength(2)
-    expect(wrapper.classes()).not.toContain('el-carousel--card')
+    const wrapper = mount(component({ direction: 'vertical' }))
+    const w = wrapper.findComponent('.el-carousel')
+    expect(w.classes()).toContain('el-carousel--vertical')
+    expect(w.classes()).toHaveLength(2)
+    expect(w.classes()).not.toContain('el-carousel--card')
   })
   it('test when the component attribute type is card', () => {
-    const wrapper = mount(Carousel, {
-      props: {
-        type: 'card'
-      }
-    })
-    expect(wrapper.classes()).toHaveLength(3)
-    expect(wrapper.classes()).toContain('el-carousel--card')
+    const wrapper = mount(component({ type: 'card' }))
+    const w = wrapper.findComponent('.el-carousel')
+    expect(w.classes()).toHaveLength(3)
+    expect(w.classes()).toContain('el-carousel--card')
   })
   it('test the height of the component when the component property is height', () => {
-    const wrapper = mount(Carousel, {
-      props: {
-        height: '400px'
-      }
-    })
-    const attrs = wrapper.get('.el-carousel__container').attributes('style')
+    const wrapper = mount(component({ height: '400px' }))
+    const w = wrapper.findComponent('.el-carousel')
+    const attrs = w.get('.el-carousel__container').attributes('style')
     expect(attrs).toEqual('height: 400px;')
   })
   it('get the components children amount', async () => {
     const template = component()
-
     const wrapper = mount(template)
     const w = wrapper.findComponent('.el-carousel')
     expect(wrapper.find('.el-carousel__indicators--labels')).toBeTruthy()
@@ -68,13 +58,13 @@ describe('Carousel.vue', () => {
     w.vm.setActiveIndex(6)
     expect(w.vm.activeIndex).toBe(0)
   })
-  it('test next page and previous page function', () => {
+  it('test next page and previous page function', async () => {
     const template = component()
     const wrapper = mount(template)
     const w = wrapper.findComponent('.el-carousel')
-    w.vm.prev()
+    await w.get('.el-carousel__arrow--left').trigger('click')
     expect(w.vm.activeIndex).toBe(3)
-    w.vm.next()
+    await w.get('.el-carousel__arrow--right').trigger('click')
     expect(w.vm.activeIndex).toBe(0)
   })
   it('test carousel component activeIndex when init', () => {
@@ -101,24 +91,18 @@ describe('Carousel.vue', () => {
   })
 
   it('test the componen button show ', () => {
-    const wrapper = mount(Carousel, {
-      props: {
-        arrow: 'always'
-      }
-    })
-    expect(wrapper.vm.arrow).toBe('always')
-    expect(wrapper.vm.states.isArrowDisplay.value).toBeTruthy()
-    expect(wrapper.vm.states.hasLabel.value).toBeFalsy()
-    expect(wrapper.findAll('.el-carousel__arrow')).toHaveLength(2)
+    const wrapper = mount(component({ arrow: 'always' }))
+    const w = wrapper.findComponent('.el-carousel')
+    expect(w.vm.arrow).toBe('always')
+    expect(w.vm.states.isArrowDisplay.value).toBeTruthy()
+    expect(w.vm.states.hasLabel.value).toBeTruthy()
+    expect(w.findAll('.el-carousel__arrow')).toHaveLength(2)
   })
 
   it('the indicatorPosition of the best component', () => {
-    const wrapper = mount(Carousel, {
-      props: {
-        indicatorPosition: 'outside'
-      }
-    })
-    const classes = wrapper.get('.el-carousel__indicators').classes()
+    const wrapper = mount(component({ indicatorPosition: 'outside' }))
+    const w = wrapper.findComponent('.el-carousel')
+    const classes = w.get('.el-carousel__indicators').classes()
     expect(classes).toContain('el-carousel__indicators--outside')
     expect(classes).toHaveLength(4)
   })
@@ -134,21 +118,33 @@ describe('Carousel.vue', () => {
     jest.advanceTimersByTime(3000)
     expect(w.vm.activeIndex).toBe(2)
   })
-  it('test component sorting function', () => {
+  it('Test call the translateItem method of the child element', () => {
+    const wrapper = mount(component({ loop: true }))
+    const list = wrapper.findAll('.el-carousel__item')
+    const val = list.some((item) => {
+      let b = item.attributes('style')
+      return b.includes('translateX(0px)')
+    })
+    expect(val).toBeTruthy()
+  })
+
+  it('test component sorting function and calculate the children component length', () => {
+    const l = []
+    const translateItem = (index, height) => {
+      l.push(height)
+    }
     const item = [
-      { index: 0 },
-      { index: 1 },
-      { index: 2 },
-      { index: 3 },
-      { index: 4 }
+      { index: 0, translateItem },
+      { index: 1, translateItem },
+      { index: 2, translateItem },
+      { index: 3, translateItem }
     ]
-    const list = sortChildren(item, 2)
-    expect(list[0]).toEqual({
-      index: 2
-    })
-    const list_0 = sortChildren(item, 0)
-    expect(list_0[0]).toEqual({
-      index: 4
-    })
+    const list = sortChildren(item, 1)
+
+    expect(list[0]['index']).toEqual(1)
+    calculateGauge([], 2, 40)
+    expect(l).toHaveLength(0)
+    calculateGauge(item, 1, 40)
+    expect(l).toEqual([-40, 0, 40, 80])
   })
 })

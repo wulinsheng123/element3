@@ -12,11 +12,26 @@ export const sortChildren = (item, activeIndex) => {
   const list = []
   if (length === 0) return false
   activeIndex === 0
-    ? clone([-1], [0, length - 2])
+    ? clone([-1], [0, length - 1])
     : clone([activeIndex], [0, activeIndex])
   return list
   function clone(a, b) {
     list.unshift(...item.slice(...a))
     list.push(...item.slice(...b))
   }
+}
+
+/**
+ * 计算每个元素的高度
+ * */
+
+export const calculateGauge = (items, activeIndex, gauge) => {
+  if (!items.length) return
+  const v = sortChildren(items, activeIndex)
+
+  v.forEach((item, index) => {
+    console.log(v, index === 0 ? -1 : index - 1, activeIndex)
+    debugger
+    item.translateItem(index, gauge * (index === 0 ? -1 : index - 1))
+  })
 }
