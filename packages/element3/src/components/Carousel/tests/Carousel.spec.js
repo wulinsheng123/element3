@@ -1,7 +1,7 @@
 import Carousel from '../src/Carousel.vue'
 import { ElCarouselItem } from '../../CarouselItem'
 import { mount } from '@vue/test-utils'
-import { sortChildren, calculateGauge } from '../src/util'
+import { calculateGauge } from '../src/util'
 const component = (date = { loop: true }) => ({
   template: `
         <Carousel height="150px"  v-bind='${JSON.stringify(date)}'>
@@ -47,6 +47,7 @@ describe('Carousel.vue', () => {
     const template = component()
     const wrapper = mount(template)
     const w = wrapper.findComponent('.el-carousel')
+    expect(w.vm.activeIndex).toBe(0)
     const result = w.vm.setActiveIndex('2s')
     expect(result).toBeFalsy()
     w.vm.setActiveIndex(1)
@@ -126,25 +127,5 @@ describe('Carousel.vue', () => {
       return b.includes('translateX(0px)')
     })
     expect(val).toBeTruthy()
-  })
-
-  it('test component sorting function and calculate the children component length', () => {
-    const l = []
-    const translateItem = (index, height) => {
-      l.push(height)
-    }
-    const item = [
-      { index: 0, translateItem },
-      { index: 1, translateItem },
-      { index: 2, translateItem },
-      { index: 3, translateItem }
-    ]
-    const list = sortChildren(item, 1)
-
-    expect(list[0]['index']).toEqual(1)
-    calculateGauge([], 2, 40)
-    expect(l).toHaveLength(0)
-    calculateGauge(item, 1, 40)
-    expect(l).toEqual([-40, 0, 40, 80])
   })
 })

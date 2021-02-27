@@ -35,7 +35,7 @@ export const props = {
   },
   loop: {
     type: Boolean,
-    default: false
+    default: true
   },
   initialIndex: {
     type: Number,

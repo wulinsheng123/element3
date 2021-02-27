@@ -26,9 +26,7 @@ export function correspondenceComponent() {
       instance.proxy.direction === 'vertical' ? 'offsetHeight' : 'offsetWidth'
     ]
   })
-  onMounted(() => {
-    calculateGauge(items.value, instance.proxy.activeIndex, calculate.value)
-  })
+
   return Object.assign(instance.proxy, { items, calculate })
 }
 
@@ -51,9 +49,9 @@ export function setIndicate({ items, $props, calculate }) {
     if (i >= length) _index.value = $props.loop ? 0 : length - 1
     if (i >= 0 && index < length) _index.value = i
   }
-  watch(_index, (index, preIndex) => {
-    if (index === preIndex) return
-    calculateGauge(items.value, index, calculate.value)
+  watch(_index, (newVal, oldVal) => {
+    if (newVal === oldVal) return
+    calculateGauge(items.value, newVal, calculate.value)
   })
   return {
     activeIndex: _index,
