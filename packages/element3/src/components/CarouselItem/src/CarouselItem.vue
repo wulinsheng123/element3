@@ -3,11 +3,18 @@
     class="el-carousel__item"
     :style="itemStyle"
     :class="{
+      'el-carousel__item--card': type === 'card',
+      'is-in-stage': inStage,
       'is-active': active,
       'is-animating': animating
     }"
+    @click="handleItemClick"
   >
-    <div class="el-carousel__mask"></div>
+    <div
+      v-show="!active"
+      v-if="type === 'card'"
+      class="el-carousel__mask"
+    ></div>
     <slot></slot>
   </div>
 </template>
@@ -22,14 +29,23 @@ export default defineComponent({
   props,
   setup() {
     const instance = getCurrentInstance()
-    const { translateItem, active, animating, itemStyle } = handleChildMethods(
-      instance
-    )
-    return {
+    const {
       translateItem,
       active,
       animating,
-      itemStyle
+      itemStyle,
+      handleItemClick,
+      type,
+      inStage
+    } = handleChildMethods(instance)
+    return {
+      type,
+      handleItemClick,
+      translateItem,
+      active,
+      animating,
+      itemStyle,
+      inStage
     }
   }
 })

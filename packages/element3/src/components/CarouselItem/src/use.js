@@ -1,41 +1,65 @@
-import { inject, getCurrentInstance, ref, computed } from 'vue'
-import { processIndex, calcTranslate } from './util'
-const CAROUSEL = 'CAROUSEL'
+import { inject, ref, computed } from 'vue'
+import { processIndex, calcTranslate, calcCardTranslate } from './util'
+import { CAROUSEL, CARD_SCALE } from './CONST'
 function getParentMethods(instance) {
   const { getChilrenItems, $parent } = inject(CAROUSEL)
   getChilrenItems(instance)
   return $parent.proxy
 }
-
 export function handleChildMethods(instance) {
   const active = ref(null)
+  const _i = ref(null)
   const animating = ref(false)
   const translate = ref(0)
-  const { direction, type, loop, items } = getParentMethods(instance)
-
+  const scale = ref(1)
+  const _inStage = ref(false)
+  const { direction, type, loop, items, setActiveIndex } = getParentMethods(
+    instance
+  )
   const translateItem = (index, activeIndex, height = 120) => {
-    if (type !== 'card') {
-      animating.value = index === activeIndex
-    }
+    _i.value = index
     if (loop) {
       index = processIndex(index, activeIndex, items.length)
     }
-    translate.value = calcTranslate(index, activeIndex, height)
-    active.value = index === activeIndex
+    if (type !== 'card') {
+      animating.value = index === activeIndex
+      translate.value = calcTranslate(index, activeIndex, height)
+      active.value = index === activeIndex
+    } else {
+      direction === 'vertical' &&
+        console.warn(
+          '[Element Warn][Carousel]vertical direction is not supported in card mode'
+        )
+      const { inStage, distance } = calcCardTranslate(
+        index,
+        activeIndex,
+        height
+      )
+      _inStage.value = inStage
+      translate.value = distance
+      active.value = index === activeIndex
+      scale.value = active.value ? 1 : CARD_SCALE
+    }
   }
 
   const itemStyle = computed(() => {
     const translateType = direction === 'vertical' ? 'translateY' : 'translateX'
-    const value = `${translateType}(${translate.value}px)`
+    const value = `${translateType}(${translate.value}px) scale(${scale.value})`
     const style = {
       transform: value
     }
     return style
   })
   return {
+    handleItemClick() {
+      if (type !== 'card') return
+      setActiveIndex(_i.value - 1)
+    },
+    type,
     translateItem,
     active,
     animating,
-    itemStyle
+    itemStyle,
+    inStage: _inStage
   }
 }

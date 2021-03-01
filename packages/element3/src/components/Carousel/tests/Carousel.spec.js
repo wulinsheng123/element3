@@ -82,6 +82,8 @@ describe('Carousel.vue', () => {
     w.vm.setActiveIndex(5)
     jest.advanceTimersByTime(3000)
     expect(w.vm.activeIndex).toBe(1)
+    const v = w.vm.setActiveIndex('23sdd')
+    expect(v).toBeFalsy()
   })
   it('test cannt automatic turned page when component proprety was autoplay', () => {
     const wrapper = mount(component({ loop: true, autoplay: false }))

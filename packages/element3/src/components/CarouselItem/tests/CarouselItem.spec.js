@@ -1,7 +1,7 @@
 import CarouselItem from '../src/CarouselItem.vue'
 import { mount, flushPromises } from '@vue/test-utils'
 import { ref } from 'vue'
-import { processIndex, calcTranslate } from '../src/util'
+import { processIndex, calcTranslate, calcCardTranslate } from '../src/util'
 
 describe('Carousel.vue', () => {
   it('snapshot', () => {
@@ -93,5 +93,42 @@ describe('Carousel.vue', () => {
     const activeIndex = 3
     const result = l.map((item) => calcTranslate(item, activeIndex, 40))
     expect(result).toEqual([120, -80, -40, 0, 40])
+  })
+  it('test components translateItem of function', async () => {
+    const getChilrenItems = () => {}
+    const setActiveIndex = jest.fn(() => {})
+    const wrapper = mount(CarouselItem, {
+      global: {
+        provide: {
+          CAROUSEL: {
+            getChilrenItems,
+            $parent: {
+              proxy: {
+                setActiveIndex,
+                type: 'card',
+                activeIndex: 2,
+                items: new Array(4)
+              }
+            }
+          }
+        }
+      }
+    })
+    await wrapper.get('.el-carousel__item').trigger('click')
+    expect(setActiveIndex).toHaveBeenCalled()
+    expect(wrapper.find('.el-carousel__mask')).toBeTruthy()
+    wrapper.vm.translateItem(1, 2, 120)
+    await flushPromises()
+    expect(wrapper.attributes('style')).toContain('scale(0.83)')
+    expect(wrapper.vm.active).toBeFalsy()
+  })
+  it('test distance when propertys type was card', () => {
+    const v = calcCardTranslate(0, 1, 120)
+    expect(v.inStage).toBeTruthy()
+    expect(v.distance < -5).toBeTruthy()
+    const v_1 = calcCardTranslate(0, 2, 120)
+    expect(v_1.distance < -54).toBeTruthy()
+    const v_2 = calcCardTranslate(4, 2, 120)
+    expect(v_2.distance > 114).toBeTruthy()
   })
 })
