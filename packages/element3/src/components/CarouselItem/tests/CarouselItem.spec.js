@@ -94,6 +94,7 @@ describe('Carousel.vue', () => {
     const result = l.map((item) => calcTranslate(item, activeIndex, 40))
     expect(result).toEqual([120, -80, -40, 0, 40])
   })
+
   it('test components translateItem of function', async () => {
     const getChilrenItems = () => {}
     const setActiveIndex = jest.fn(() => {})
@@ -121,6 +122,9 @@ describe('Carousel.vue', () => {
     await flushPromises()
     expect(wrapper.attributes('style')).toContain('scale(0.83)')
     expect(wrapper.vm.active).toBeFalsy()
+    wrapper.vm.hover = true
+    await flushPromises()
+    expect(wrapper.find('.is-hover')).toBeTruthy()
   })
   it('test distance when propertys type was card', () => {
     const v = calcCardTranslate(0, 1, 120)

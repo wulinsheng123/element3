@@ -6,6 +6,7 @@
       'el-carousel__item--card': type === 'card',
       'is-in-stage': inStage,
       'is-active': active,
+      'is-hover': hover,
       'is-animating': animating
     }"
     @click="handleItemClick"
@@ -22,12 +23,13 @@
 <script>
 import { props } from './props.ts'
 import { handleChildMethods } from './use'
-import { defineComponent, getCurrentInstance } from 'vue'
+import { defineComponent, getCurrentInstance, ref } from 'vue'
 
 export default defineComponent({
   name: 'ElCarouselItem',
   props,
   setup() {
+    const hover = ref(false)
     const instance = getCurrentInstance()
     const {
       translateItem,
@@ -45,7 +47,8 @@ export default defineComponent({
       active,
       animating,
       itemStyle,
-      inStage
+      inStage,
+      hover
     }
   }
 })

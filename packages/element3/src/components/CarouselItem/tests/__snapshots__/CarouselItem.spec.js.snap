@@ -3,11 +3,9 @@
 exports[`Carousel.vue snapshot 1`] = `
 <div
   class="el-carousel__item"
-  style="transform: translateX(0px);"
+  style="transform: translateX(0px) scale(1);"
 >
-  <div
-    class="el-carousel__mask"
-  />
+  <!--v-if-->
   
   
 </div>
