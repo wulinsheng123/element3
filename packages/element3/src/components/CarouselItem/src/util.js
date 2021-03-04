@@ -1,4 +1,3 @@
-import { ref } from 'vue'
 import { CARD_SCALE } from './CONST'
 export const processIndex = (index, activeIndex, length) => {
   if (length <= 2 || index === activeIndex) return index

@@ -4,7 +4,6 @@ import {
   ref,
   onMounted,
   onUnmounted,
-  toRef,
   getCurrentInstance,
   watch
 } from 'vue'
@@ -57,32 +56,40 @@ export function setIndicate({ items, $props, calculate }) {
     activeIndex: _index,
     setActiveIndex,
     prev: throttle(() => setActiveIndex(_index.value - 1), 300),
-    next: throttle(() => setActiveIndex(_index.value + 1), 300)
+    next: throttle(() => setActiveIndex(_index.value + 1), 300),
+    handleSetActiveIndex: throttle((index) => setActiveIndex(index), 300)
   }
 }
 
 export function initComponent(instance) {
   const { items, $props } = instance
+
+  const hover = ref(false)
   const states = collectState($props, items)
   const { pauseTimer, startTimer } = handleControler(items, instance)
   return {
     items,
     states,
+    hover,
     handleMouseEnter() {
+      hover.value = true
       pauseTimer()
     },
     handleMouseLeave() {
+      hover.value = false
       startTimer()
     }
   }
   function collectState(props, items) {
+    const isArrowDisplay = computed(
+      () => props.arrow !== 'never' && props.direction !== 'vertical'
+    )
+    const hasLabel = computed(() =>
+      items.value.some((item) => item.label.toString().length > 0)
+    )
     return {
-      isArrowDisplay: computed(() => {
-        return props.arrow !== 'never' && props.direction !== 'vertical'
-      }),
-      hasLabel: computed(() => {
-        return items.value.some((item) => item.label.toString().length > 0)
-      })
+      isArrowDisplay,
+      hasLabel
     }
   }
 }

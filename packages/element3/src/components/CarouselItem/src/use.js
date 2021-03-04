@@ -53,7 +53,9 @@ export function handleChildMethods(instance) {
   return {
     handleItemClick() {
       if (type !== 'card') return
-      setActiveIndex(_i.value - 1)
+      const index = items.indexOf(instance.proxy)
+      console.log(index)
+      setActiveIndex(index)
     },
     type,
     translateItem,

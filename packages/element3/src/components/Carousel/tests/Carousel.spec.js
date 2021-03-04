@@ -1,7 +1,7 @@
 import Carousel from '../src/Carousel.vue'
 import { ElCarouselItem } from '../../CarouselItem'
 import { mount } from '@vue/test-utils'
-import { calculateGauge } from '../src/util'
+import { inStage } from '../src/util'
 const component = (date = { loop: true }) => ({
   template: `
         <Carousel height="150px"  v-bind='${JSON.stringify(date)}'>
@@ -129,5 +129,51 @@ describe('Carousel.vue', () => {
       return b.includes('translateX(0px)')
     })
     expect(val).toBeTruthy()
+  })
+  it('test house element on the button', async () => {
+    const wrapper = mount(component({ loop: true, type: 'card' }))
+    const button = wrapper.get('.el-carousel__arrow--left')
+    await button.trigger('mouseenter')
+    const mouseenterList = wrapper.findAllComponents('.el-carousel__item')
+    const res = mouseenterList.map((item) => item.vm.hover)
+    expect(res).toEqual([false, false, false, false])
+    await button.trigger('mouseleave')
+    const list = wrapper.findAllComponents('.el-carousel__item')
+    expect(list.some((item) => !item.vm.hover)).toBeTruthy()
+  })
+  it('test house arrive the component inner ', async () => {
+    const wrapper = mount(component({ loop: true }))
+    const w = wrapper.findComponent('.el-carousel')
+    await w.trigger('mouseenter')
+    expect(w.vm.hover).toBeTruthy()
+    await w.trigger('mouseleave')
+    expect(w.vm.hover).toBeFalsy()
+  })
+  it('test inStage function ', () => {
+    const items = [
+      {
+        active: false,
+        inStage: false
+      },
+      {
+        active: false,
+        inStage: true
+      },
+      {
+        active: true,
+        inStage: true
+      },
+      {
+        active: false,
+        inStage: false
+      }
+    ]
+    const v = items.map((item, index) => inStage(item, index, items))
+    expect(v).toEqual([false, 'left', false, false])
+  })
+  it('test componens property was vertical', () => {
+    const wrapper = mount(component({ loop: true, direction: 'vertical' }))
+    const w = wrapper.findComponent('.el-carousel')
+    expect(w.vm.states.isArrowDisplay.value).toBeFalsy()
   })
 })
