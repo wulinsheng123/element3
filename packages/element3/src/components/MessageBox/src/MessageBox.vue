@@ -112,23 +112,30 @@ export default defineComponent({
     ElButton
   },
   setup(props) {
-    const confirmButtonLoading = ref(false)
     const state = reactive({
       action: null,
       visible: true,
-      ...props
+      ...props,
+      confirmButtonLoading: false
     })
+
     const instance = getCurrentInstance()
+
     const { iconClass, type } = toRefs(state)
+
     const { validate, editorErrorMessage } = validateFunction(state, instance)
+
     const {
       closeHandle,
       handleAction,
       handleInputEnter,
       handleWrapperClick
     } = useHandleList(state, instance, validate)
-    const icon = classIcon(iconClass, type)
+
+    const icon = classIcon(iconClass.value, type.value)
+
     watchElement(state, handleAction, closeHandle)
+
     return {
       ...toRefs(state),
       editorErrorMessage,
@@ -136,8 +143,7 @@ export default defineComponent({
       handleAction,
       handleInputEnter,
       handleWrapperClick,
-      closeHandle,
-      confirmButtonLoading
+      closeHandle
     }
   }
 })

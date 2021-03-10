@@ -3,6 +3,7 @@ import { usePopup } from '../../../composables/popup'
 import { isFunction } from '@vue/shared'
 export function useHandleList(state, instance, validate) {
   const { close } = usePopup(state)
+
   const {
     visible,
     callback,
@@ -13,6 +14,7 @@ export function useHandleList(state, instance, validate) {
     action,
     beforeClose
   } = toRefs(state)
+
   const closeHandle = () => {
     visible.value = false
     close()
@@ -20,6 +22,7 @@ export function useHandleList(state, instance, validate) {
       unref(callback)(state.action, instance.proxy)
     })
   }
+
   const handleAction = (_action) => {
     if (unref(category) === 'prompt' && _action === 'confirm' && !validate()) {
       return
@@ -58,13 +61,16 @@ export function watchElement(state, handleAction, closeHandle) {
     closeOnPressEscape,
     distinguishCancelAndClose
   } = toRefs(state)
+
   const { open } = usePopup(state)
+
   const handleKeyup = (element = {}) => {
     if (element.code !== 'Escape') return
     if (unref(closeOnPressEscape)) {
       handleAction(unref(distinguishCancelAndClose) ? 'close' : 'cancel')
     }
   }
+
   onMounted(() => {
     if (unref(closeOnHashChange)) {
       window.addEventListener('hashchange', closeHandle)
@@ -74,6 +80,7 @@ export function watchElement(state, handleAction, closeHandle) {
       open()
     })
   })
+
   onUnmounted(() => {
     if (unref(closeOnHashChange)) {
       window.removeEventListener('hashchange', closeHandle)

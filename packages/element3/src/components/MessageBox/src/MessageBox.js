@@ -1,10 +1,23 @@
 import { isVNode } from 'vue'
-import { isObject, isUndefined } from '../../../utils/types'
+import { isUndefined } from '../../../utils/types'
 import { createComponent } from '../../../composables/component'
 import msgboxVue from './MessageBox.vue'
+import { collection } from './defaultParam'
 
 let currentMsg, instance
+
 let msgQueue = []
+
+// 初始化
+initMessageBox()
+
+function initMessageBox() {
+  for (let key in collection) {
+    MessageBox[key] = (message, title, options) => {
+      return MessageBox(collection[key](message, title, options))
+    }
+  }
+}
 
 const defaultCallback = (action) => {
   if (currentMsg && currentMsg.resolve) {
@@ -45,10 +58,10 @@ const showNextMsg = () => {
     currentMsg,
     isVNode(options.message) ? () => options.message : null
   )
+
   document.body.appendChild(instance.vnode.el)
 }
-
-const MessageBox = function (options) {
+function MessageBox(options) {
   let callback = null
   if (options.callback) {
     callback = options.callback
@@ -65,58 +78,6 @@ const MessageBox = function (options) {
   })
   promiseInstance.instance = instance
   return promiseInstance
-}
-
-const mergeCondition = (message, title, options) => {
-  if (isObject(title)) {
-    options = title
-    title = ''
-  } else if (isUndefined(title)) {
-    title = ''
-  }
-  if (isObject(message)) {
-    options = message
-    message = ''
-  }
-  return Object.assign(
-    {
-      title: title,
-      message: message,
-      confirmButtonText: '确认',
-      cancelButtonText: '取消'
-    },
-    options
-  )
-}
-
-const kindOfMessageBox = {
-  alert: {
-    category: 'alert',
-    closeOnPressEscape: false
-  },
-  confirm: {
-    type: 'info',
-    category: 'confirm',
-    showCancelButton: true
-  },
-  prompt: {
-    showInput: true,
-    category: 'prompt',
-    showCancelButton: true,
-    inputErrorMessage: '输入的数据不合法!'
-  },
-  msgbox: MessageBox
-}
-
-for (let key in kindOfMessageBox) {
-  MessageBox[key] = (message, title, options) => {
-    return MessageBox(
-      Object.assign(
-        kindOfMessageBox[key],
-        mergeCondition(message, title, options)
-      )
-    )
-  }
 }
 
 MessageBox.close = () => {

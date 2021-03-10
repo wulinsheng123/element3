@@ -2,7 +2,6 @@ import { flushPromises } from '@vue/test-utils'
 import { nextTick, h } from 'vue'
 import { merge } from 'lodash-es'
 import messageBox, { MessageBox } from '../src/MessageBox.js'
-const selector = '.el-message-box__wrapper'
 function testCallback(name, options = {}) {
   const message = '请输入邮箱'
   const o = {
@@ -57,9 +56,6 @@ describe('MessageBox.js', () => {
         callback
       }
     )
-    expect(instance.proxy.message).toBe(
-      '<strong>这是 <i>HTML</i> 片段</strong>'
-    )
     expect(instance.proxy.title).toBe('html片段')
     expect(instance.proxy.dangerouslyUseHTMLString).toBeTruthy()
     instance.proxy.closeHandle()
@@ -74,27 +70,6 @@ describe('MessageBox.js', () => {
       message: '这是一段内容'
     })
     expect(instance.props.type).toBe('warning')
-  })
-  test('kind of prompt', async () => {
-    let v = ''
-    const callback = jest.fn(({ value }) => {
-      v = value
-    })
-    const instance = testCallback('prompt', {
-      confirmButtonClass: 'mmmm',
-      inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-      inputErrorMessage: '邮箱格式不正确'
-    })
-    const btn = document.querySelector('.mmmm')
-    instance.then(callback)
-    btn.click()
-    await flushPromises()
-    expect(callback).not.toHaveBeenCalled()
-    instance.instance.proxy.inputValue = '409187100@qq.com'
-    btn.click()
-    await flushPromises()
-    expect(callback).toHaveBeenCalled()
-    expect(v).toBeTruthy()
   })
   test('was invoked', async () => {
     const callback = jest.fn(() => {})
